@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cadastro - Pizzaria</title>
+    <link rel="stylesheet" href="./css/styles.css" />
+  </head>
+  <body data-page="register">
+    <main class="auth-page">
+      <section class="auth-card">
+        <h1>Cadastro</h1>
+        <p>Crie sua conta para pedir pizzas.</p>
+        <div id="message" class="message info">Crie sua conta de cliente.</div>
+        <form id="register-form">
+          <input id="name" type="text" placeholder="Nome" required />
+          <input id="email" type="email" placeholder="Email" required />
+          <input id="password" type="password" placeholder="Senha" required />
+          <button type="submit">Cadastrar</button>
+        </form>
+        <button type="button" onclick="window.location.href='login.html'">Voltar para Login</button>
+      </section>
+    </main>
+    <script src="./js/api.js"></script>
+    <script src="./js/main.js"></script>
+  </body>
+</html>

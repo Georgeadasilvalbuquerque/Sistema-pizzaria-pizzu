@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Pizzaria</title>
+    <link rel="stylesheet" href="./css/styles.css" />
+  </head>
+  <body data-page="dashboard">
+    <div class="dash-wrapper">
+      <header class="topbar dash-topbar">
+        <div>
+          <h1>Dashboard</h1>
+          <small id="user-info"></small>
+        </div>
+        <button id="logout-btn">Sair</button>
+      </header>
+
+      <main>
+        <div id="message" class="message info">Painel da pizzaria.</div>
+
+        <section class="panel">
+          <h2>Produtos</h2>
+          <div id="dashboard-products-list" class="products-grid"></div>
+        </section>
+
+        <section id="client-section" class="panel">
+          <h2>Meu Carrinho</h2>
+          <ul id="cart-list"></ul>
+          <p>Total: <strong id="cart-total">R$ 0,00</strong></p>
+          <button id="checkout-btn">Finalizar Compra</button>
+        </section>
+
+        <section class="panel">
+          <h2>Pedidos</h2>
+          <ul id="orders-list"></ul>
+        </section>
+
+        <section id="admin-section" class="panel hidden">
+          <h2>Gestao de Produtos (ADMIN)</h2>
+          <form id="add-product-form">
+            <input id="product-name" type="text" placeholder="Nome da pizza" required />
+            <input id="product-price" type="number" step="0.01" placeholder="Preco" required />
+            <textarea id="product-description" placeholder="Descricao"></textarea>
+            <button type="submit">Adicionar Produto</button>
+          </form>
+          <div id="admin-products-list"></div>
+        </section>
+      </main>
+    </div>
+    <script src="./js/api.js"></script>
+    <script src="./js/main.js"></script>
+  </body>
+</html>

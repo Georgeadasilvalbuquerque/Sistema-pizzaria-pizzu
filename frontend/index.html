@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pizzaria - Inicio</title>
+    <link rel="stylesheet" href="./css/styles.css" />
+  </head>
+  <body data-page="index">
+    <div class="app-shell">
+      <aside class="left-nav">
+        <div class="brand-circle">🍕</div>
+        <nav>
+          <button class="nav-icon active">🏠</button>
+          <button class="nav-icon">👤</button>
+          <button class="nav-icon">💬</button>
+          <button class="nav-icon">⚙️</button>
+        </nav>
+      </aside>
+
+      <main class="home-main">
+        <header class="topbar">
+          <div>
+            <small>Hello Cliente</small>
+            <h1>Welcome Back</h1>
+          </div>
+          <input type="search" placeholder="Search" class="search-input" />
+          <div class="row-actions">
+            <button id="dashboard-btn" class="hidden">Dashboard</button>
+            <button id="login-btn">Login</button>
+          </div>
+        </header>
+
+        <div id="message" class="message info">Escolha sua pizza favorita.</div>
+
+        <section class="hero-banner">
+          <div>
+            <h2>Make Your First Order and Get <span>50% Off</span></h2>
+            <p>Sabores incriveis, ingredientes frescos e entrega rapida.</p>
+            <button>Order Now</button>
+          </div>
+          <div class="hero-pizza">🍕</div>
+        </section>
+
+        <section class="menu-head">
+          <h2>Our Menu</h2>
+          <div class="category-tags">
+            <span class="tag-item active">🍕 Pizza</span>
+            <span class="tag-item">🍔 Burger</span>
+            <span class="tag-item">🍟 Fries</span>
+            <span class="tag-item">🥤 Pack</span>
+          </div>
+        </section>
+
+        <section>
+          <div id="products-list" class="products-grid"></div>
+        </section>
+      </main>
+
+      <aside class="order-sidebar">
+        <h3>Order Menu</h3>
+        <p>Finalize seu pedido por aqui.</p>
+        <div class="panel compact">
+          <p>Total Price</p>
+          <strong id="sidebar-total">R$ 0,00</strong>
+        </div>
+        <button id="checkout-btn" class="full-btn">Checkout</button>
+      </aside>
+    </div>
+
+    <script src="./js/api.js"></script>
+    <script src="./js/main.js"></script>
+  </body>
+</html>
