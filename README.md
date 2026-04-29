@@ -1,3 +1,3 @@
-npm install - forntend/backend
-npm start backend
-George -- El bigode
+# npm install - forntend/backend
+# npm start backend
+## George -- El bigode
