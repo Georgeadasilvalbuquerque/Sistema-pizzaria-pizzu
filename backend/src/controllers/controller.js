@@ -24,25 +24,16 @@ function requireAdmin(req, res, next) {
   next();
 }
 
-async function register(req, res) {
-  const { name, email, password, role } = req.body;
-  if (!name || !email || !password) {
-    return res.status(400).json({ error: "Nome, email e senha sao obrigatorios." });
-  }
-
-  const normalizedRole = role === "ADMIN" || role === "CLIENTE" || role === "USUARIO" ? role : "CLIENTE";
-  const existing = await model.findUserByEmail(email);
-  if (existing) {
-    return res.status(409).json({ error: "Email ja cadastrado." });
-  }
-
-  const passwordHash = await bcrypt.hash(password, 10);
-  const user = await model.createUser({ name, email, passwordHash, role: normalizedRole });
-  return res.status(201).json({ message: "Cadastro realizado com sucesso.", user });
+async function register(_req, res) {
+  return res.status(403).json({
+    error:
+      "Cadastro publico desativado. Use as contas de teste: usuario@pizzu.test ou admin@pizzu.test (senha 123456).",
+  });
 }
 
 async function login(req, res) {
-  const { email, password } = req.body;
+  const email = String(req.body?.email ?? "").trim();
+  const password = String(req.body?.password ?? "");
   if (!email || !password) {
     return res.status(400).json({ error: "Email e senha sao obrigatorios." });
   }

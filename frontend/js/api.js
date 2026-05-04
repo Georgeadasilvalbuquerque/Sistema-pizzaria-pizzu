@@ -35,9 +35,21 @@ async function request(path, options = {}) {
 
   if (response.status === 204) return null;
 
-  const data = await response.json();
+  const contentType = response.headers.get("content-type") || "";
+  let data = null;
+  if (contentType.includes("application/json")) {
+    try {
+      const text = await response.text();
+      data = text ? JSON.parse(text) : {};
+    } catch {
+      throw new Error("Resposta invalida do servidor (JSON).");
+    }
+  } else {
+    throw new Error("Servidor retornou resposta nao JSON. Verifique se a API esta rodando.");
+  }
+
   if (!response.ok) {
-    throw new Error(data.error || "Erro na requisicao.");
+    throw new Error((data && data.error) || "Erro na requisicao.");
   }
   return data;
 }

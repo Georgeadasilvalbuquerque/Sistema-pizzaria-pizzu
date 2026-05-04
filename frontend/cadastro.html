@@ -3,22 +3,59 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cadastro - Pizzaria</title>
+    <title>Contas de teste - Pizzaria</title>
     <link rel="stylesheet" href="./css/styles.css" />
   </head>
   <body data-page="register">
     <main class="auth-page">
-      <section class="auth-card">
-        <h1>Cadastro</h1>
-        <p>Crie sua conta para pedir pizzas.</p>
-        <div id="message" class="message info">Crie sua conta de cliente.</div>
-        <form id="register-form">
-          <input id="name" type="text" placeholder="Nome" required />
-          <input id="email" type="email" placeholder="Email" required />
-          <input id="password" type="password" placeholder="Senha" required />
-          <button type="submit">Cadastrar</button>
-        </form>
-        <button type="button" onclick="window.location.href='login.html'">Voltar para Login</button>
+      <section class="auth-card auth-card--wide">
+        <h1>Contas de demonstracao</h1>
+        <p>O cadastro publico esta desativado. Use uma das duas contas abaixo (mesma senha) e faca login.</p>
+        <div id="message" class="message info">Senha para ambas: <strong>123456</strong></div>
+
+        <div class="demo-accounts">
+          <article class="demo-account demo-account--user">
+            <h2>Usuario (pagina principal)</h2>
+            <p>Compra no cardapio, carrinho e checkout ficam na <strong>inicio</strong>.</p>
+            <dl class="demo-credentials">
+              <dt>Email</dt>
+              <dd><code id="email-usuario">usuario@pizzu.test</code> <button type="button" class="btn-copy" data-copy="email-usuario">Copiar</button></dd>
+              <dt>Senha</dt>
+              <dd><code>123456</code></dd>
+            </dl>
+          </article>
+          <article class="demo-account demo-account--admin">
+            <h2>Administrador (dashboard)</h2>
+            <p>Criar, editar e excluir produtos e ver todos os pedidos.</p>
+            <dl class="demo-credentials">
+              <dt>Email</dt>
+              <dd><code id="email-admin">admin@pizzu.test</code> <button type="button" class="btn-copy" data-copy="email-admin">Copiar</button></dd>
+              <dt>Senha</dt>
+              <dd><code>123456</code></dd>
+            </dl>
+          </article>
+        </div>
+
+        <p class="auth-hint">
+          Campo abaixo so para testar o teclado no navegador (nao envia dados):
+        </p>
+        <div class="auth-test-field">
+          <label for="test-password-input">Teste de senha</label>
+          <input
+            id="test-password-input"
+            name="test_password"
+            type="password"
+            autocomplete="new-password"
+            autocapitalize="off"
+            spellcheck="false"
+            placeholder="Digite aqui para testar"
+          />
+        </div>
+
+        <div class="auth-actions">
+          <a class="auth-primary-link" href="./login.html">Ir para o login</a>
+          <a class="auth-secondary-link" href="./index.html">Voltar ao inicio</a>
+        </div>
       </section>
     </main>
     <script src="./js/api.js"></script>

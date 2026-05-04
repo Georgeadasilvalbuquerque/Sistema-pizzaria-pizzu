@@ -15,9 +15,10 @@ function renderProducts(products, targetId, onAdd, options = {}) {
   container.innerHTML = "";
 
   products.forEach((product) => {
+    const basePrice = Number(product.price);
     const finalPrice = options.discountRate
-      ? Number((product.price * (1 - options.discountRate)).toFixed(2))
-      : Number(product.price);
+      ? Number((basePrice * (1 - options.discountRate)).toFixed(2))
+      : basePrice;
 
     const card = document.createElement("div");
     card.className = `product-card ${options.isPromotion ? "promotion-card" : ""}`.trim();
@@ -71,8 +72,56 @@ function setupCarousels() {
   });
 }
 
+async function refreshIndexCart() {
+  const list = document.getElementById("index-cart-list");
+  const totalEl = document.getElementById("sidebar-total");
+  if (!list || !totalEl) return;
+
+  const token = window.authStorage.getToken();
+  const user = window.authStorage.getCurrentUser();
+  if (!token || !user || user.role !== "CLIENTE") {
+    list.innerHTML = "";
+    totalEl.textContent = "R$ 0,00";
+    return;
+  }
+
+  try {
+    const cart = await window.appApi.getCart();
+    list.innerHTML = "";
+    if (!cart.items.length) {
+      const li = document.createElement("li");
+      li.className = "sidebar-cart-empty";
+      li.textContent = "Carrinho vazio.";
+      list.appendChild(li);
+    } else {
+      cart.items.forEach((item) => {
+        const li = document.createElement("li");
+        li.textContent = `${item.name} x${item.quantity} — ${formatPrice(item.subtotal)}`;
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "sidebar-cart-remove danger-btn";
+        btn.textContent = "Remover";
+        btn.addEventListener("click", async () => {
+          await window.appApi.removeFromCart(item.productId);
+          await refreshIndexCart();
+        });
+        li.appendChild(btn);
+        list.appendChild(li);
+      });
+    }
+    totalEl.textContent = formatPrice(cart.total);
+  } catch (error) {
+    showMessage(error.message, "error");
+  }
+}
+
 async function setupIndexPage() {
   const user = window.authStorage.getCurrentUser();
+  if (user && user.role === "ADMIN") {
+    window.location.replace("dashboard.html");
+    return;
+  }
+
   const loginBtn = document.getElementById("login-btn");
   const dashboardBtn = document.getElementById("dashboard-btn");
   const checkoutBtn = document.getElementById("checkout-btn");
@@ -83,12 +132,7 @@ async function setupIndexPage() {
       window.authStorage.clearAuth();
       window.location.reload();
     });
-    if (user.role === "ADMIN") {
-      dashboardBtn.classList.remove("hidden");
-      dashboardBtn.addEventListener("click", () => {
-        window.location.href = "dashboard.html";
-      });
-    }
+    if (dashboardBtn) dashboardBtn.classList.add("hidden");
   } else {
     loginBtn.addEventListener("click", () => (window.location.href = "login.html"));
   }
@@ -101,11 +145,12 @@ async function setupIndexPage() {
         return;
       }
       if (window.authStorage.getCurrentUser()?.role !== "CLIENTE") {
-        showMessage("Somente usuarios do tipo cliente podem comprar.", "error");
+        showMessage("Somente o usuario de teste pode comprar nesta demonstracao.", "error");
         return;
       }
       await window.appApi.addToCart({ productId, quantity: 1 });
       showMessage("Produto adicionado ao carrinho.", "success");
+      await refreshIndexCart();
     };
 
     renderProducts(products, "products-list", addToCartHandler);
@@ -118,22 +163,49 @@ async function setupIndexPage() {
     showMessage(error.message, "error");
   }
 
-  checkoutBtn.addEventListener("click", () => {
-    if (!window.authStorage.getToken()) {
-      showMessage("Nao e possivel finalizar sem login.", "error");
-      return;
-    }
-    window.location.href = "dashboard.html";
-  });
+  await refreshIndexCart();
+
+  if (checkoutBtn) {
+    checkoutBtn.addEventListener("click", async () => {
+      if (!window.authStorage.getToken()) {
+        showMessage("Nao e possivel finalizar sem login.", "error");
+        return;
+      }
+      if (window.authStorage.getCurrentUser()?.role !== "CLIENTE") {
+        showMessage("Somente o usuario de teste finaliza pedido na pagina principal.", "error");
+        return;
+      }
+      try {
+        await window.appApi.checkout();
+        showMessage("Pedido finalizado com sucesso.", "success");
+        await refreshIndexCart();
+      } catch (error) {
+        showMessage(error.message, "error");
+      }
+    });
+  }
 }
 
 function setupLoginPage() {
   const form = document.getElementById("login-form");
+  if (!form) return;
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+    const emailEl = document.getElementById("login-email");
+    const passwordEl = document.getElementById("login-password");
+    if (!emailEl || !passwordEl) {
+      showMessage("Formulario de login incompleto.", "error");
+      return;
+    }
+
+    const email = String(emailEl.value || "").trim();
+    const password = String(passwordEl.value || "");
+
+    if (!email || !password) {
+      showMessage("Preencha email e senha.", "error");
+      return;
+    }
 
     try {
       const data = await window.appApi.login({ email, password });
@@ -144,35 +216,38 @@ function setupLoginPage() {
         window.location.href = "index.html";
       }
     } catch (error) {
-      showMessage(error.message, "error");
+      showMessage(error.message || "Falha no login.", "error");
     }
   });
 }
 
 function setupRegisterPage() {
-  const form = document.getElementById("register-form");
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const name = document.getElementById("name").value;
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    const role = document.getElementById("role").value;
-
-    try {
-      await window.appApi.register({ name, email, password, role });
-      showMessage("Cadastro realizado! Faca login para continuar.", "success");
-      setTimeout(() => {
-        window.location.href = "login.html";
-      }, 900);
-    } catch (error) {
-      showMessage(error.message, "error");
-    }
+  document.querySelectorAll(".btn-copy[data-copy]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const id = btn.getAttribute("data-copy");
+      const el = id ? document.getElementById(id) : null;
+      const text = el ? el.textContent.trim() : "";
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        showMessage("Email copiado.", "success");
+      } catch {
+        showMessage("Nao foi possivel copiar. Copie manualmente.", "error");
+      }
+    });
   });
+
+  const testPwd = document.getElementById("test-password-input");
+  if (testPwd) {
+    testPwd.removeAttribute("readonly");
+    testPwd.disabled = false;
+  }
 }
 
 function renderCart(cart) {
   const list = document.getElementById("cart-list");
   const total = document.getElementById("cart-total");
+  if (!list || !total) return;
   list.innerHTML = "";
   if (!cart.items.length) {
     list.innerHTML = "<li>Carrinho vazio.</li>";
@@ -196,6 +271,7 @@ function renderCart(cart) {
 
 function renderOrders(orders) {
   const list = document.getElementById("orders-list");
+  if (!list) return;
   list.innerHTML = "";
   if (!orders.length) {
     list.innerHTML = "<li>Nenhum pedido encontrado.</li>";
@@ -203,32 +279,28 @@ function renderOrders(orders) {
   }
   orders.forEach((order) => {
     const li = document.createElement("li");
-    li.innerHTML = `Pedido #${order.id} - ${formatPrice(order.total)} - ${new Date(order.createdAt).toLocaleString("pt-BR")}`;
+    const cliente =
+      order.user && typeof order.user === "object"
+        ? ` — ${order.user.name} (${order.user.email})`
+        : "";
+    li.textContent = `Pedido #${order.id}${cliente} — ${formatPrice(order.total)} — ${new Date(
+      order.createdAt
+    ).toLocaleString("pt-BR")}`;
     list.appendChild(li);
   });
 }
 
 async function refreshDashboardData() {
   const user = window.authStorage.getCurrentUser();
+  if (!user || user.role !== "ADMIN") return;
+
   const products = await window.appApi.getProducts();
-  if (user.role === "ADMIN") {
-    renderProductsReadOnly(products, "dashboard-products-list");
-  } else {
-    renderProducts(products, "dashboard-products-list", async (productId) => {
-      await window.appApi.addToCart({ productId, quantity: 1 });
-      showMessage("Produto adicionado ao carrinho.", "success");
-      await refreshDashboardData();
-    });
-    const cart = await window.appApi.getCart();
-    renderCart(cart);
-  }
+  renderProductsReadOnly(products, "dashboard-products-list");
 
   const orders = await window.appApi.getOrders();
   renderOrders(orders);
 
-  if (user.role === "ADMIN") {
-    renderAdminProductList(products);
-  }
+  renderAdminProductList(products);
 }
 
 function renderAdminProductList(products) {
@@ -267,13 +339,16 @@ function setupDashboardPage() {
     window.location.href = "login.html";
     return;
   }
+
   if (user.role !== "ADMIN") {
-    showMessage("Acesso permitido apenas para administradores.", "error");
-    setTimeout(() => {
-      window.location.href = "index.html";
-    }, 900);
+    window.location.replace("index.html");
     return;
   }
+
+  const clientSection = document.getElementById("client-section");
+  const adminSection = document.getElementById("admin-section");
+  if (clientSection) clientSection.classList.add("hidden");
+  if (adminSection) adminSection.classList.remove("hidden");
 
   document.getElementById("user-info").textContent = `${user.name} (${user.role})`;
   document.getElementById("logout-btn").addEventListener("click", () => {

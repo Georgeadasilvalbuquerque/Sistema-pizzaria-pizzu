@@ -10,15 +10,36 @@
     <main class="auth-page">
       <section class="auth-card">
         <h1>Login</h1>
-        <p>Acesse para continuar seu pedido.</p>
+        <p>Acesse com sua conta de teste.</p>
         <div id="message" class="message info">Entre com email e senha.</div>
-        <form id="login-form">
-          <input id="email" type="email" placeholder="Email" required />
-          <input id="password" type="password" placeholder="Senha" required />
+        <form id="login-form" novalidate>
+          <label class="auth-field-label" for="login-email">Email</label>
+          <input
+            id="login-email"
+            name="email"
+            type="email"
+            inputmode="email"
+            autocomplete="username"
+            autocapitalize="off"
+            spellcheck="false"
+            placeholder="seu@email.com"
+            required
+          />
+          <label class="auth-field-label" for="login-password">Senha</label>
+          <input
+            id="login-password"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            autocapitalize="off"
+            spellcheck="false"
+            placeholder="Senha"
+            required
+          />
           <button type="submit">Entrar</button>
         </form>
         <div class="auth-links">
-          <a href="./cadastro.html">Cadastro</a>
+          <a href="./cadastro.html">Contas de teste</a>
           <a href="./index.html">Voltar</a>
         </div>
       </section>

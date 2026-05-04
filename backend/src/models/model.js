@@ -221,21 +221,26 @@ async function listOrdersForUser(user) {
   });
 }
 
-async function bootstrapInitialData({ adminPasswordHash }) {
-  const adminEmail = "admin@pizzaria.com";
-  const existingAdmin = await prisma.user.findUnique({
-    where: { email: adminEmail },
-  });
+async function bootstrapInitialData({ testPasswordHash }) {
+  const seedUsers = [
+    { name: "Usuario Teste", email: "usuario@pizzu.test", role: "CLIENTE" },
+    { name: "Administrador Teste", email: "admin@pizzu.test", role: "ADMIN" },
+  ];
 
-  if (!existingAdmin) {
-    await prisma.user.create({
-      data: {
-        name: "Administrador",
-        email: adminEmail,
-        passwordHash: adminPasswordHash,
-        role: "ADMIN",
-      },
+  for (const u of seedUsers) {
+    const exists = await prisma.user.findUnique({
+      where: { email: u.email },
     });
+    if (!exists) {
+      await prisma.user.create({
+        data: {
+          name: u.name,
+          email: u.email,
+          passwordHash: testPasswordHash,
+          role: u.role,
+        },
+      });
+    }
   }
 
   const productsCount = await prisma.product.count();
