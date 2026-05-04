@@ -9,7 +9,37 @@ function formatPrice(value) {
   return `R$ ${Number(value).toFixed(2).replace(".", ",")}`;
 }
 
-function renderProducts(products, targetId, onAdd) {
+function renderProducts(products, targetId, onAdd, options = {}) {
+  const container = document.getElementById(targetId);
+  if (!container) return;
+  container.innerHTML = "";
+
+  products.forEach((product) => {
+    const finalPrice = options.discountRate
+      ? Number((product.price * (1 - options.discountRate)).toFixed(2))
+      : Number(product.price);
+
+    const card = document.createElement("div");
+    card.className = `product-card ${options.isPromotion ? "promotion-card" : ""}`.trim();
+    card.innerHTML = `
+      <h3>${product.name}</h3>
+      <p>${product.description || "Sem descricao."}</p>
+      ${
+        options.isPromotion
+          ? `<small>De <s>${formatPrice(product.price)}</s></small>`
+          : ""
+      }
+      <strong>${formatPrice(finalPrice)}</strong>
+      <button data-id="${product.id}">Adicionar ao carrinho</button>
+    `;
+    card.querySelector("button").addEventListener("click", () =>
+      onAdd(product.id, finalPrice)
+    );
+    container.appendChild(card);
+  });
+}
+
+function renderProductsReadOnly(products, targetId) {
   const container = document.getElementById(targetId);
   if (!container) return;
   container.innerHTML = "";
@@ -21,10 +51,23 @@ function renderProducts(products, targetId, onAdd) {
       <h3>${product.name}</h3>
       <p>${product.description || "Sem descricao."}</p>
       <strong>${formatPrice(product.price)}</strong>
-      <button data-id="${product.id}">Adicionar ao carrinho</button>
     `;
-    card.querySelector("button").addEventListener("click", () => onAdd(product.id));
     container.appendChild(card);
+  });
+}
+
+function setupCarousels() {
+  const scrollAmount = 320;
+  const controls = document.querySelectorAll(".carousel-btn");
+  controls.forEach((button) => {
+    button.addEventListener("click", () => {
+      const targetId = button.dataset.carouselTarget;
+      const direction = button.dataset.direction;
+      const target = document.getElementById(targetId);
+      if (!target) return;
+      const movement = direction === "left" ? -scrollAmount : scrollAmount;
+      target.scrollBy({ left: movement, behavior: "smooth" });
+    });
   });
 }
 
@@ -40,24 +83,37 @@ async function setupIndexPage() {
       window.authStorage.clearAuth();
       window.location.reload();
     });
-    dashboardBtn.classList.remove("hidden");
-    dashboardBtn.addEventListener("click", () => {
-      window.location.href = "dashboard.html";
-    });
+    if (user.role === "ADMIN") {
+      dashboardBtn.classList.remove("hidden");
+      dashboardBtn.addEventListener("click", () => {
+        window.location.href = "dashboard.html";
+      });
+    }
   } else {
     loginBtn.addEventListener("click", () => (window.location.href = "login.html"));
   }
 
   try {
     const products = await window.appApi.getProducts();
-    renderProducts(products, "products-list", async (productId) => {
+    const addToCartHandler = async (productId) => {
       if (!window.authStorage.getToken()) {
         showMessage("Faca login para adicionar itens ao carrinho.", "error");
         return;
       }
+      if (window.authStorage.getCurrentUser()?.role !== "CLIENTE") {
+        showMessage("Somente usuarios do tipo cliente podem comprar.", "error");
+        return;
+      }
       await window.appApi.addToCart({ productId, quantity: 1 });
       showMessage("Produto adicionado ao carrinho.", "success");
+    };
+
+    renderProducts(products, "products-list", addToCartHandler);
+    renderProducts(products.slice(0, 6), "promotions-list", addToCartHandler, {
+      isPromotion: true,
+      discountRate: 0.2,
     });
+    setupCarousels();
   } catch (error) {
     showMessage(error.message, "error");
   }
@@ -73,7 +129,6 @@ async function setupIndexPage() {
 
 function setupLoginPage() {
   const form = document.getElementById("login-form");
-  const registerBtn = document.getElementById("go-register-btn");
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -83,14 +138,14 @@ function setupLoginPage() {
     try {
       const data = await window.appApi.login({ email, password });
       window.authStorage.saveAuth(data);
-      window.location.href = "dashboard.html";
+      if (data.user.role === "ADMIN") {
+        window.location.href = "dashboard.html";
+      } else {
+        window.location.href = "index.html";
+      }
     } catch (error) {
       showMessage(error.message, "error");
     }
-  });
-
-  registerBtn.addEventListener("click", () => {
-    window.location.href = "cadastro.html";
   });
 }
 
@@ -101,9 +156,10 @@ function setupRegisterPage() {
     const name = document.getElementById("name").value;
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
+    const role = document.getElementById("role").value;
 
     try {
-      await window.appApi.register({ name, email, password });
+      await window.appApi.register({ name, email, password, role });
       showMessage("Cadastro realizado! Faca login para continuar.", "success");
       setTimeout(() => {
         window.location.href = "login.html";
@@ -155,13 +211,14 @@ function renderOrders(orders) {
 async function refreshDashboardData() {
   const user = window.authStorage.getCurrentUser();
   const products = await window.appApi.getProducts();
-  renderProducts(products, "dashboard-products-list", async (productId) => {
-    await window.appApi.addToCart({ productId, quantity: 1 });
-    showMessage("Produto adicionado ao carrinho.", "success");
-    await refreshDashboardData();
-  });
-
-  if (user.role === "CLIENTE") {
+  if (user.role === "ADMIN") {
+    renderProductsReadOnly(products, "dashboard-products-list");
+  } else {
+    renderProducts(products, "dashboard-products-list", async (productId) => {
+      await window.appApi.addToCart({ productId, quantity: 1 });
+      showMessage("Produto adicionado ao carrinho.", "success");
+      await refreshDashboardData();
+    });
     const cart = await window.appApi.getCart();
     renderCart(cart);
   }
@@ -210,35 +267,19 @@ function setupDashboardPage() {
     window.location.href = "login.html";
     return;
   }
+  if (user.role !== "ADMIN") {
+    showMessage("Acesso permitido apenas para administradores.", "error");
+    setTimeout(() => {
+      window.location.href = "index.html";
+    }, 900);
+    return;
+  }
 
   document.getElementById("user-info").textContent = `${user.name} (${user.role})`;
   document.getElementById("logout-btn").addEventListener("click", () => {
     window.authStorage.clearAuth();
     window.location.href = "index.html";
   });
-
-  const adminSection = document.getElementById("admin-section");
-  const clientSection = document.getElementById("client-section");
-  if (user.role === "ADMIN") {
-    adminSection.classList.remove("hidden");
-    clientSection.classList.add("hidden");
-  } else {
-    clientSection.classList.remove("hidden");
-    adminSection.classList.add("hidden");
-  }
-
-  const checkoutBtn = document.getElementById("checkout-btn");
-  if (checkoutBtn) {
-    checkoutBtn.addEventListener("click", async () => {
-      try {
-        await window.appApi.checkout();
-        showMessage("Pedido finalizado com sucesso.", "success");
-        await refreshDashboardData();
-      } catch (error) {
-        showMessage(error.message, "error");
-      }
-    });
-  }
 
   const addProductForm = document.getElementById("add-product-form");
   if (addProductForm) {

@@ -1,8 +1,11 @@
 const express = require("express");
 const routes = require("./routes/routes");
+const bcrypt = require("bcryptjs");
+const model = require("./models/model");
 
 const app = express();
 const PORT = 3000;
+let httpServer = null;
 
 app.use(express.json());
 
@@ -28,6 +31,19 @@ app.get("/", (_req, res) => {
 
 app.use("/api", routes);
 
-app.listen(PORT, () => {
-  console.log(`Servidor backend rodando em http://localhost:${PORT}`);
+async function startServer() {
+  const adminPasswordHash = await bcrypt.hash("123456", 10);
+  await model.bootstrapInitialData({ adminPasswordHash });
+
+  httpServer = app.listen(PORT, () => {
+    console.log(`Servidor backend rodando em http://localhost:${PORT}`);
+  });
+
+  // Mantem o processo ativo no ambiente local/terminal.
+  process.stdin.resume();
+}
+
+startServer().catch((error) => {
+  console.error("Falha ao iniciar backend:", error);
+  process.exit(1);
 });

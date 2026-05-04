@@ -1,4 +1,6 @@
-const db = require("../config/db");
+const crypto = require("crypto");
+const prisma = require("../config/prisma");
+const { Prisma } = require("@prisma/client");
 
 function sanitizeUser(user) {
   return {
@@ -9,134 +11,248 @@ function sanitizeUser(user) {
   };
 }
 
-function createUser({ name, email, password }) {
-  const newUser = {
-    id: db.counters.users++,
-    name,
-    email: email.toLowerCase(),
-    password,
-    role: "CLIENTE",
-  };
-  db.users.push(newUser);
-  return sanitizeUser(newUser);
+function normalizeRole(role) {
+  if (!role) return "CLIENTE";
+  if (role === "USUARIO") return "CLIENTE";
+  if (role === "ADMIN" || role === "CLIENTE") return role;
+  return "CLIENTE";
 }
 
-function findUserByEmail(email) {
-  return db.users.find((user) => user.email === email.toLowerCase());
+async function createUser({ name, email, passwordHash, role }) {
+  const created = await prisma.user.create({
+    data: {
+      name,
+      email: email.toLowerCase(),
+      passwordHash,
+      role: normalizeRole(role),
+    },
+  });
+  return sanitizeUser(created);
 }
 
-function findUserById(id) {
-  return db.users.find((user) => user.id === id);
+async function findUserByEmail(email) {
+  return prisma.user.findUnique({
+    where: { email: email.toLowerCase() },
+  });
 }
 
-function createSession(userId) {
-  const token = `token-${userId}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-  db.sessions[token] = userId;
+async function findUserById(id) {
+  return prisma.user.findUnique({
+    where: { id: Number(id) },
+  });
+}
+
+async function createSession(userId) {
+  const token = crypto.randomBytes(32).toString("hex");
+  await prisma.session.create({
+    data: {
+      token,
+      userId: Number(userId),
+    },
+  });
   return token;
 }
 
-function findUserByToken(token) {
-  const userId = db.sessions[token];
-  if (!userId) return null;
-  const user = findUserById(userId);
-  return user || null;
+async function findUserByToken(token) {
+  const session = await prisma.session.findUnique({
+    where: { token },
+    include: { user: true },
+  });
+  if (!session) return null;
+  if (session.expiresAt && session.expiresAt < new Date()) return null;
+  return session.user || null;
 }
 
-function listProducts() {
-  return db.products;
+async function listProducts() {
+  return prisma.product.findMany({
+    orderBy: { id: "asc" },
+  });
 }
 
-function createProduct({ name, price, description }) {
-  const newProduct = {
-    id: db.counters.products++,
-    name,
-    price: Number(price),
-    description: description || "",
-  };
-  db.products.push(newProduct);
-  return newProduct;
+async function createProduct({ name, price, description }) {
+  return prisma.product.create({
+    data: {
+      name,
+      price: new Prisma.Decimal(Number(price)),
+      description: description || "",
+    },
+  });
 }
 
-function updateProduct(id, payload) {
-  const product = db.products.find((item) => item.id === Number(id));
-  if (!product) return null;
-  if (payload.name !== undefined) product.name = payload.name;
-  if (payload.price !== undefined) product.price = Number(payload.price);
-  if (payload.description !== undefined) product.description = payload.description;
-  return product;
+async function updateProduct(id, payload) {
+  const existing = await prisma.product.findUnique({
+    where: { id: Number(id) },
+  });
+  if (!existing) return null;
+
+  return prisma.product.update({
+    where: { id: Number(id) },
+    data: {
+      ...(payload.name !== undefined ? { name: payload.name } : {}),
+      ...(payload.price !== undefined ? { price: new Prisma.Decimal(Number(payload.price)) } : {}),
+      ...(payload.description !== undefined ? { description: payload.description } : {}),
+    },
+  });
 }
 
-function deleteProduct(id) {
-  const index = db.products.findIndex((item) => item.id === Number(id));
-  if (index === -1) return false;
-  db.products.splice(index, 1);
-  return true;
-}
-
-function getCartByUser(userId) {
-  if (!db.carts[userId]) db.carts[userId] = [];
-  return db.carts[userId];
-}
-
-function addProductToCart(userId, productId, quantity = 1) {
-  const cart = getCartByUser(userId);
-  const product = db.products.find((item) => item.id === Number(productId));
-  if (!product) return { error: "Produto nao encontrado." };
-  const existing = cart.find((item) => item.productId === product.id);
-  if (existing) {
-    existing.quantity += Number(quantity);
-  } else {
-    cart.push({ productId: product.id, quantity: Number(quantity) });
+async function deleteProduct(id) {
+  try {
+    await prisma.product.delete({
+      where: { id: Number(id) },
+    });
+    return true;
+  } catch (_error) {
+    return false;
   }
-  return { cart };
 }
 
-function removeProductFromCart(userId, productId) {
-  const cart = getCartByUser(userId);
-  const index = cart.findIndex((item) => item.productId === Number(productId));
-  if (index === -1) return false;
-  cart.splice(index, 1);
-  return true;
+async function addProductToCart(userId, productId, quantity = 1) {
+  const userIdNumber = Number(userId);
+  const productIdNumber = Number(productId);
+  const product = await prisma.product.findUnique({
+    where: { id: productIdNumber },
+  });
+  if (!product) return { error: "Produto nao encontrado." };
+
+  const existing = await prisma.cartItem.findUnique({
+    where: {
+      userId_productId: {
+        userId: userIdNumber,
+        productId: productIdNumber,
+      },
+    },
+  });
+
+  if (existing) {
+    await prisma.cartItem.update({
+      where: { id: existing.id },
+      data: { quantity: existing.quantity + Number(quantity) },
+    });
+    return { cart: true };
+  }
+
+  await prisma.cartItem.create({
+    data: {
+      userId: userIdNumber,
+      productId: productIdNumber,
+      quantity: Number(quantity),
+    },
+  });
+  return { cart: true };
 }
 
-function getDetailedCart(userId) {
-  const cart = getCartByUser(userId);
-  const items = cart
-    .map((item) => {
-      const product = db.products.find((p) => p.id === item.productId);
-      if (!product) return null;
-      return {
-        productId: product.id,
-        name: product.name,
-        price: product.price,
-        quantity: item.quantity,
-        subtotal: Number((product.price * item.quantity).toFixed(2)),
-      };
-    })
-    .filter(Boolean);
+async function removeProductFromCart(userId, productId) {
+  const deleted = await prisma.cartItem.deleteMany({
+    where: {
+      userId: Number(userId),
+      productId: Number(productId),
+    },
+  });
+  return deleted.count > 0;
+}
+
+async function getDetailedCart(userId) {
+  const cart = await prisma.cartItem.findMany({
+    where: { userId: Number(userId) },
+    include: { product: true },
+    orderBy: { id: "asc" },
+  });
+
+  const items = cart.map((item) => {
+    const price = Number(item.product.price);
+    return {
+      productId: item.product.id,
+      name: item.product.name,
+      price,
+      quantity: item.quantity,
+      subtotal: Number((price * item.quantity).toFixed(2)),
+    };
+  });
+
   const total = Number(items.reduce((acc, item) => acc + item.subtotal, 0).toFixed(2));
   return { items, total };
 }
 
-function checkout(userId) {
-  const cartDetails = getDetailedCart(userId);
+async function checkout(userId) {
+  const userIdNumber = Number(userId);
+  const cartDetails = await getDetailedCart(userIdNumber);
   if (!cartDetails.items.length) return { error: "Carrinho vazio." };
-  const order = {
-    id: db.counters.orders++,
-    userId,
-    createdAt: new Date().toISOString(),
-    items: cartDetails.items,
-    total: cartDetails.total,
-    status: "FINALIZADO",
-  };
-  db.orders.push(order);
-  db.carts[userId] = [];
+
+  const order = await prisma.$transaction(async (tx) => {
+    const createdOrder = await tx.order.create({
+      data: {
+        userId: userIdNumber,
+        total: new Prisma.Decimal(cartDetails.total),
+        status: "FINALIZADO",
+        items: {
+          create: cartDetails.items.map((item) => ({
+            productId: item.productId,
+            productName: item.name,
+            unitPrice: new Prisma.Decimal(item.price),
+            quantity: item.quantity,
+            subtotal: new Prisma.Decimal(item.subtotal),
+          })),
+        },
+      },
+      include: { items: true },
+    });
+
+    await tx.cartItem.deleteMany({
+      where: { userId: userIdNumber },
+    });
+
+    return createdOrder;
+  });
+
   return { order };
 }
 
-function listOrdersForUser(user) {
-  if (user.role === "ADMIN") return db.orders;
-  return db.orders.filter((order) => order.userId === user.id);
+async function listOrdersForUser(user) {
+  if (user.role === "ADMIN") {
+    return prisma.order.findMany({
+      include: { items: true, user: true },
+      orderBy: { createdAt: "desc" },
+    });
+  }
+  return prisma.order.findMany({
+    where: { userId: user.id },
+    include: { items: true },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+async function bootstrapInitialData({ adminPasswordHash }) {
+  const adminEmail = "admin@pizzaria.com";
+  const existingAdmin = await prisma.user.findUnique({
+    where: { email: adminEmail },
+  });
+
+  if (!existingAdmin) {
+    await prisma.user.create({
+      data: {
+        name: "Administrador",
+        email: adminEmail,
+        passwordHash: adminPasswordHash,
+        role: "ADMIN",
+      },
+    });
+  }
+
+  const productsCount = await prisma.product.count();
+  if (productsCount === 0) {
+    await prisma.product.createMany({
+      data: [
+        { name: "Margherita", price: new Prisma.Decimal(39.9), description: "Molho, mussarela e manjericao." },
+        { name: "Calabresa", price: new Prisma.Decimal(44.9), description: "Calabresa, cebola e mussarela." },
+        { name: "Frango com Catupiry", price: new Prisma.Decimal(47.9), description: "Frango desfiado e catupiry." },
+        {
+          name: "Quatro Queijos",
+          price: new Prisma.Decimal(49.9),
+          description: "Mussarela, provolone, parmesao e gorgonzola.",
+        },
+      ],
+    });
+  }
 }
 
 module.exports = {
@@ -149,10 +265,10 @@ module.exports = {
   createProduct,
   updateProduct,
   deleteProduct,
-  getCartByUser,
   addProductToCart,
   removeProductFromCart,
   getDetailedCart,
   checkout,
   listOrdersForUser,
+  bootstrapInitialData,
 };
