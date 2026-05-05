@@ -69,12 +69,19 @@ async function listProducts() {
   });
 }
 
-async function createProduct({ name, price, description }) {
+function normalizeImageUrl(url) {
+  if (url === undefined || url === null) return null;
+  const s = String(url).trim();
+  return s.length ? s : null;
+}
+
+async function createProduct({ name, price, description, imageUrl }) {
   return prisma.product.create({
     data: {
       name,
       price: new Prisma.Decimal(Number(price)),
       description: description || "",
+      imageUrl: normalizeImageUrl(imageUrl),
     },
   });
 }
@@ -91,6 +98,7 @@ async function updateProduct(id, payload) {
       ...(payload.name !== undefined ? { name: payload.name } : {}),
       ...(payload.price !== undefined ? { price: new Prisma.Decimal(Number(payload.price)) } : {}),
       ...(payload.description !== undefined ? { description: payload.description } : {}),
+      ...(payload.imageUrl !== undefined ? { imageUrl: normalizeImageUrl(payload.imageUrl) } : {}),
     },
   });
 }
@@ -221,6 +229,23 @@ async function listOrdersForUser(user) {
   });
 }
 
+/** Fotos ilustrativas (Unsplash) — substitua por URLs proprias se preferir. */
+const PRODUCT_IMAGE_SEED = {
+  Margherita: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800&q=80&auto=format&fit=crop",
+  Calabresa: "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=800&q=80&auto=format&fit=crop",
+  "Frango com Catupiry": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&q=80&auto=format&fit=crop",
+  "Quatro Queijos": "https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?w=800&q=80&auto=format&fit=crop",
+};
+
+async function backfillProductImagesFromSeed() {
+  for (const [name, imageUrl] of Object.entries(PRODUCT_IMAGE_SEED)) {
+    await prisma.product.updateMany({
+      where: { name, imageUrl: null },
+      data: { imageUrl },
+    });
+  }
+}
+
 async function bootstrapInitialData({ testPasswordHash }) {
   const seedUsers = [
     { name: "Usuario Teste", email: "usuario@pizzu.test", role: "CLIENTE" },
@@ -247,17 +272,35 @@ async function bootstrapInitialData({ testPasswordHash }) {
   if (productsCount === 0) {
     await prisma.product.createMany({
       data: [
-        { name: "Margherita", price: new Prisma.Decimal(39.9), description: "Molho, mussarela e manjericao." },
-        { name: "Calabresa", price: new Prisma.Decimal(44.9), description: "Calabresa, cebola e mussarela." },
-        { name: "Frango com Catupiry", price: new Prisma.Decimal(47.9), description: "Frango desfiado e catupiry." },
+        {
+          name: "Margherita",
+          price: new Prisma.Decimal(39.9),
+          description: "Molho, mussarela e manjericao.",
+          imageUrl: PRODUCT_IMAGE_SEED.Margherita,
+        },
+        {
+          name: "Calabresa",
+          price: new Prisma.Decimal(44.9),
+          description: "Calabresa, cebola e mussarela.",
+          imageUrl: PRODUCT_IMAGE_SEED.Calabresa,
+        },
+        {
+          name: "Frango com Catupiry",
+          price: new Prisma.Decimal(47.9),
+          description: "Frango desfiado e catupiry.",
+          imageUrl: PRODUCT_IMAGE_SEED["Frango com Catupiry"],
+        },
         {
           name: "Quatro Queijos",
           price: new Prisma.Decimal(49.9),
           description: "Mussarela, provolone, parmesao e gorgonzola.",
+          imageUrl: PRODUCT_IMAGE_SEED["Quatro Queijos"],
         },
       ],
     });
   }
+
+  await backfillProductImagesFromSeed();
 }
 
 module.exports = {

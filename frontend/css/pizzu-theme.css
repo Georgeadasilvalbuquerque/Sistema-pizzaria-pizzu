@@ -1,0 +1,189 @@
+/**
+ * Pizzu + Bootstrap — mantem a paleta do projeto:
+ * laranja #ff9f2d, fundo #f2f2f2, texto #1e1f23, hero escuro #2f3138
+ */
+:root {
+  --pizzu-orange: #ff9f2d;
+  --pizzu-orange-hover: #f09020;
+  --pizzu-dark: #2f3138;
+  --pizzu-dark-2: #262930;
+  --pizzu-bg: #f2f2f2;
+  --pizzu-text: #1e1f23;
+  --pizzu-card-shadow: 0 8px 24px rgba(25, 31, 58, 0.1);
+  --pizzu-transition: 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.pizzu-body {
+  background: var(--pizzu-bg);
+  color: var(--pizzu-text);
+}
+
+.btn-primary,
+.btn-primary:focus {
+  background-color: var(--pizzu-orange);
+  border-color: var(--pizzu-orange);
+}
+
+.btn-primary:hover {
+  background-color: var(--pizzu-orange-hover);
+  border-color: var(--pizzu-orange-hover);
+}
+
+.text-pizzu-orange {
+  color: var(--pizzu-orange) !important;
+}
+
+.bg-pizzu-dark {
+  background: linear-gradient(120deg, var(--pizzu-dark), var(--pizzu-dark-2)) !important;
+}
+
+/* Hero carousel */
+.pizzu-hero-carousel {
+  box-shadow: var(--pizzu-card-shadow);
+}
+
+.pizzu-hero-carousel .carousel-item {
+  min-height: 260px;
+}
+
+.pizzu-carousel-slide {
+  min-height: 260px;
+  padding: 2rem clamp(1rem, 4vw, 3rem);
+  align-items: center;
+}
+
+.pizzu-carousel-slide__icon {
+  font-size: clamp(4rem, 12vw, 7rem);
+  line-height: 1;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.35));
+}
+
+.carousel-indicators [data-bs-target] {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--pizzu-orange);
+}
+
+.pizzu-hero-carousel .carousel-control-prev,
+.pizzu-hero-carousel .carousel-control-next {
+  width: 48px;
+  height: 48px;
+  top: 50%;
+  transform: translateY(-50%);
+  bottom: auto;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.pizzu-hero-carousel .carousel-control-prev {
+  left: 12px;
+}
+
+.pizzu-hero-carousel .carousel-control-next {
+  right: 12px;
+}
+
+/* Imagem do card do cardapio */
+.pizzu-card-img-wrap {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: linear-gradient(145deg, #eceff4, #dfe4ec);
+}
+
+.pizzu-card-img-placeholder {
+  min-height: 0;
+}
+
+.pizzu-product-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.pizzu-product-card:hover .pizzu-product-img {
+  transform: scale(1.05);
+}
+
+/* Cards de produto — animacao hover */
+.pizzu-product-card {
+  transition: transform var(--pizzu-transition), box-shadow var(--pizzu-transition);
+  border-radius: 1rem !important;
+}
+
+.pizzu-product-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(25, 31, 58, 0.14) !important;
+}
+
+.pizzu-product-card--promo {
+  border: 2px solid rgba(255, 159, 45, 0.45) !important;
+}
+
+.pizzu-product-card--promo:hover {
+  border-color: var(--pizzu-orange) !important;
+}
+
+.pizzu-product-card .card-title {
+  color: var(--pizzu-text);
+  font-weight: 700;
+}
+
+.pizzu-product-card .price-tag {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--pizzu-orange);
+}
+
+/* Navbar */
+.pizzu-navbar {
+  background: #fff !important;
+  box-shadow: 0 4px 18px rgba(25, 31, 58, 0.06);
+}
+
+.pizzu-navbar .navbar-brand {
+  font-weight: 800;
+  color: var(--pizzu-text) !important;
+}
+
+/* Sidebar pedido */
+.pizzu-sidebar-card {
+  border-radius: 1rem;
+  border: 1px solid #e5e7ee;
+}
+
+/* Secoes */
+.pizzu-section-title {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Login / cadastro */
+.pizzu-auth-shell {
+  min-height: 100vh;
+  background: radial-gradient(circle at top right, #ffd8a6, var(--pizzu-bg) 52%);
+}
+
+.pizzu-auth-card {
+  border-radius: 1.25rem;
+  border: none;
+  box-shadow: 0 14px 40px rgba(19, 30, 74, 0.12);
+}
+
+.pizzu-auth-card .input-group-text {
+  background: #f0f2f7;
+  border-color: #d3d7df;
+}
+
+.pizzu-demo-card {
+  border-radius: 1rem;
+  transition: transform var(--pizzu-transition), box-shadow var(--pizzu-transition);
+}
+
+.pizzu-demo-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(25, 31, 58, 0.1);
+}

@@ -58,11 +58,11 @@ async function getProducts(_req, res) {
 }
 
 async function createProduct(req, res) {
-  const { name, price, description } = req.body;
+  const { name, price, description, imageUrl } = req.body;
   if (!name || price === undefined) {
     return res.status(400).json({ error: "Nome e preco sao obrigatorios." });
   }
-  const created = await model.createProduct({ name, price, description });
+  const created = await model.createProduct({ name, price, description, imageUrl });
   return res.status(201).json(created);
 }
 

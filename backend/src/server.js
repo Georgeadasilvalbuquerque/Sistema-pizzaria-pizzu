@@ -1,13 +1,18 @@
 require("dotenv/config");
+const path = require("path");
 const express = require("express");
 const routes = require("./routes/routes");
 const bcrypt = require("bcryptjs");
 const prisma = require("./config/prisma");
 const model = require("./models/model");
+const { PORT } = require("./config/env");
+const { corsMiddleware } = require("./middleware/cors");
 
 const app = express();
-const PORT = Number(process.env.PORT) || 3000;
 let httpServer = null;
+
+/** Pasta do site (index.html, css/, js/, api/, HTML/, admin/) — irma do diretorio backend/ */
+const FRONTEND_DIR = path.join(__dirname, "..", "..", "frontend");
 
 function logDatabaseEnvHint() {
   const raw = process.env.DATABASE_URL;
@@ -75,16 +80,9 @@ Erro retornado: ${msg}
 }
 
 app.use(express.json());
+app.use(corsMiddleware);
 
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  if (req.method === "OPTIONS") return res.sendStatus(204);
-  next();
-});
-
-app.get("/", (_req, res) => {
+app.get("/api", (_req, res) => {
   res.json({
     message: "API da Pizzaria online.",
     docs: {
@@ -93,10 +91,13 @@ app.get("/", (_req, res) => {
       cart: ["/api/cart", "/api/cart/add", "/api/cart/remove/:productId", "/api/cart/checkout"],
       orders: ["/api/orders"],
     },
+    site: "A interface web esta em GET / (index.html).",
   });
 });
 
 app.use("/api", routes);
+
+app.use(express.static(FRONTEND_DIR, { index: "index.html" }));
 
 async function startServer() {
   logDatabaseEnvHint();
@@ -105,7 +106,9 @@ async function startServer() {
   await model.bootstrapInitialData({ testPasswordHash });
 
   httpServer = app.listen(PORT, () => {
-    console.log(`Servidor backend rodando em http://localhost:${PORT}`);
+    console.log(`Servidor rodando em http://localhost:${PORT}`);
+    console.log(`  Site (index.html): http://localhost:${PORT}/`);
+    console.log(`  API JSON (docs):   http://localhost:${PORT}/api`);
   });
 
   // Mantem o processo ativo no ambiente local/terminal.
