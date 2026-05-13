@@ -5,59 +5,105 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pizzaria - Inicio</title>
     <link rel="stylesheet" href="./css/styles.css" />
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Babylonica&display=swap');
+    </style>
   </head>
   <body data-page="index">
-    <div class="app-shell">
-      <aside class="left-nav">
-        <div class="brand-circle">🍕</div>
-        <nav>
-          <button class="nav-icon active">🏠</button>
-          <button class="nav-icon">👤</button>
-          <button class="nav-icon">💬</button>
-          <button class="nav-icon">⚙️</button>
-        </nav>
-      </aside>
+    <div id="cart-drawer-backdrop" class="cart-drawer-backdrop" aria-hidden="true"></div>
 
-      <main class="home-main">
-        <header class="topbar">
-          <div>
-            <small>Hello Cliente</small>
-            <h1>Welcome Back</h1>
-          </div>
-          <input type="search" placeholder="Search" class="search-input" />
+    <div class="app-shell app-shell--index">
+      <header class="topbar index-topbar">
+        <div class="topbar-intro">
+          <small>Hello Cliente</small>
+          <h1>Welcome Back</h1>
+        </div>
+        <div class="topbar-actions">
+          <input type="search" placeholder="Search" class="search-input index-search-input" />
           <div class="row-actions">
             <button id="dashboard-btn" class="hidden">Dashboard</button>
+            <button type="button" id="cart-header-btn" aria-label="Abrir carrinho" aria-expanded="false" aria-controls="order-sidebar">
+              Carrinho
+            </button>
             <button id="login-btn">Login</button>
           </div>
-        </header>
+        </div>
+      </header>
 
-        <div id="message" class="message info">Escolha sua pizza favorita.</div>
-
-        <section class="hero-banner">
-          <div>
-            <h2>Make Your First Order and Get <span>50% Off</span></h2>
-            <p>Sabores incriveis, ingredientes frescos e entrega rapida.</p>
-            <button>Order Now</button>
-          </div>
-          <div class="hero-pizza">🍕</div>
-        </section>
-
-        <section class="menu-head">
-          <h2>Our Menu</h2>
-          <div class="category-tags">
-            <span class="tag-item active">🍕 Pizza</span>
-            <span class="tag-item">🍔 Burger</span>
-            <span class="tag-item">🍟 Fries</span>
-            <span class="tag-item">🥤 Pack</span>
+      <div class="index-hero">
+        <section class="pizzu-banner-section" aria-label="Banner da Pizzaria Pizzu">
+          <div class="pizzu-banner-overlay"></div>
+          <div class="pizzu-banner-content">
+            <h1>A PIZZARIA</h1>
+            <h2>Pizzu</h2>
+           
           </div>
         </section>
+      </div>
 
-        <section>
-          <div id="products-list" class="products-grid"></div>
-        </section>
-      </main>
+      <section class="pizzu-categories" aria-labelledby="pizzu-categories-title">
+        <div class="pizzu-categories__inner">
+          <h2 class="pizzu-categories__title" id="pizzu-categories-title">Conheça nosso Cardápio</h2>
 
-      <aside class="order-sidebar">
+          <div class="pizzu-categories__viewport">
+            <ul class="pizzu-categories__track">
+              <li class="pizzu-categories__item">
+                <div class="pizzu-categories__card">
+                  <div class="pizzu-categories__circle">
+                    <img src="../assets/img/cat-tradicionais.png" alt="" width="160" height="160" loading="lazy" />
+                  </div>
+                  <p class="pizzu-categories__label">Pizzas Tradicionais</p>
+                </div>
+              </li>
+              <li class="pizzu-categories__item">
+                <div class="pizzu-categories__card">
+                  <div class="pizzu-categories__circle">
+                    <img src="../assets/img/cat-especiais.png" alt="" width="160" height="160" loading="lazy" />
+                  </div>
+                  <p class="pizzu-categories__label">Pizzas Especiais</p>
+                </div>
+              </li>
+              <li class="pizzu-categories__item">
+                <div class="pizzu-categories__card">
+                  <div class="pizzu-categories__circle">
+                    <img src="../assets/img/cat-doces.png" alt="" width="160" height="160" loading="lazy" />
+                  </div>
+                  <p class="pizzu-categories__label">Pizzas Doces</p>
+                </div>
+              </li>
+              <li class="pizzu-categories__item">
+                <div class="pizzu-categories__card">
+                  <div class="pizzu-categories__circle">
+                    <img src="../assets/img/cat-bebidas.png" alt="" width="160" height="160" loading="lazy" />
+                  </div>
+                  <p class="pizzu-categories__label">Bebidas</p>
+                </div>
+              </li>
+              <li class="pizzu-categories__item">
+                <div class="pizzu-categories__card">
+                  <div class="pizzu-categories__circle">
+                    <img src="../assets/img/cat-entradas.png" alt="" width="160" height="160" loading="lazy" />
+                  </div>
+                  <p class="pizzu-categories__label">Entradas</p>
+                </div>
+              </li>
+              <li class="pizzu-categories__item">
+                <div class="pizzu-categories__card">
+                  <div class="pizzu-categories__circle">
+                    <img src="../assets/img/cat-combos.png" alt="" width="160" height="160" loading="lazy" />
+                  </div>
+                  <p class="pizzu-categories__label">Combos</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <aside class="order-sidebar order-sidebar--drawer" id="order-sidebar" aria-label="Carrinho de pedidos">
+        <button type="button" class="cart-drawer-close" id="cart-drawer-close" aria-label="Fechar carrinho">
+          &times;
+        </button>
         <h3>Order Menu</h3>
         <p>Finalize seu pedido por aqui.</p>
         <div class="panel compact">
@@ -66,9 +112,159 @@
         </div>
         <button id="checkout-btn" class="full-btn">Checkout</button>
       </aside>
+
+      <div class="index-main home-main">
+        <div id="message" class="message info">Escolha sua pizza favorita.</div>
+
+        <section class="menu-head">
+          <h2>Our Menu</h2>
+          <div class="category-tags">
+            <span class="tag-item active">🍕 Pizza</span>
+            <span class="tag-item">🥤 Pack</span>
+          </div>
+        </section>
+
+        <section>
+          <div id="products-list" class="products-grid"></div>
+        </section>
+      </div>
     </div>
+
+    <footer class="pizzu-footer">
+      <div class="pizzu-footer__container">
+        <h2 class="pizzu-footer__title">VEM PEGAR UMA FATIA!</h2>
+
+        <section class="pizzu-footer__main" aria-label="Informacoes e localizacao da Pizzu">
+          <address class="pizzu-footer__info">
+            <p>
+              Av. Bernardino de Campos, 98
+              <br />
+              Sao Paulo, SP 12345-678
+            </p>
+            <p>
+              Segunda - Sexta 07:00 - 22:00
+              <br />
+              Sabado 09:00 - 22:00
+              <br />
+              Domingo 08:00 - 23:00
+            </p>
+            <p>
+              Tel: (11) 3456-7890
+              <br />
+              contato@pizzu.com.br
+            </p>
+          </address>
+
+          <section aria-label="Mapa da Pizzu">
+            <iframe
+              class="pizzu-footer__map"
+              title="Mapa da Pizzaria Pizzu em Sao Paulo"
+              src="https://www.google.com/maps?q=Av.+Bernardino+de+Campos,+98,+Sao+Paulo&output=embed"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </section>
+        </section>
+
+        <div class="pizzu-footer__top-wrap">
+          <button class="pizzu-footer__top-btn" id="back-to-top-btn" aria-label="Voltar ao topo">
+            ▲
+          </button>
+        </div>
+
+        <section class="pizzu-footer__bottom" aria-label="Informacoes adicionais do rodape">
+          <div class="pizzu-footer__social">
+            <div class="pizzu-footer__social-links">
+              <a
+                class="pizzu-footer__icon-link"
+                href="#"
+                aria-label="Instagram da Pizzu"
+                title="Instagram"
+              >
+                <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M7.8 2h8.4A5.8 5.8 0 0 1 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8A5.8 5.8 0 0 1 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8A3.6 3.6 0 0 0 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6A3.6 3.6 0 0 0 16.4 4H7.6m9.65 1.5a1.2 1.2 0 1 1 0 2.4a1.2 1.2 0 0 1 0-2.4M12 7a5 5 0 1 1 0 10a5 5 0 0 1 0-10m0 2a3 3 0 1 0 0 6a3 3 0 0 0 0-6Z"
+                  ></path>
+                </svg>
+              </a>
+              <a class="pizzu-footer__icon-link" href="#" aria-label="Twitter da Pizzu" title="Twitter">
+                <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M22 5.92a7.35 7.35 0 0 1-2.12.58a3.7 3.7 0 0 0 1.63-2.05a7.4 7.4 0 0 1-2.35.9A3.69 3.69 0 0 0 12.87 8a10.46 10.46 0 0 1-7.6-3.85a3.68 3.68 0 0 0 1.14 4.93a3.64 3.64 0 0 1-1.67-.46v.05A3.69 3.69 0 0 0 7.7 12.3a3.8 3.8 0 0 1-.97.13c-.24 0-.47-.02-.7-.07a3.7 3.7 0 0 0 3.44 2.56a7.42 7.42 0 0 1-4.58 1.58c-.3 0-.59-.02-.89-.05A10.5 10.5 0 0 0 9.68 18c6.82 0 10.55-5.65 10.55-10.55v-.48A7.5 7.5 0 0 0 22 5.92Z"
+                  ></path>
+                </svg>
+              </a>
+            </div>
+            <p class="pizzu-footer__copyright">© 2026 por Pizzu. Todos os direitos reservados.</p>
+          </div>
+
+          <section aria-label="Formulario de newsletter da Pizzu">
+            <p class="pizzu-footer__newsletter-text">Junte-se a nossa lista de e-mails</p>
+            <form class="pizzu-footer__newsletter-form">
+              <label for="newsletter-email" class="sr-only" hidden>E-mail para newsletter</label>
+              <input
+                class="pizzu-footer__input"
+                id="newsletter-email"
+                type="email"
+                placeholder="Insira o seu e-mail aqui*"
+                required
+              />
+              <button class="pizzu-footer__submit" type="submit">Participar</button>
+            </form>
+          </section>
+        </section>
+      </div>
+    </footer>
 
     <script src="./js/api.js"></script>
     <script src="./js/main.js"></script>
+    <script>
+      const backToTopBtn = document.getElementById("back-to-top-btn");
+
+      if (backToTopBtn) {
+        backToTopBtn.addEventListener("click", function () {
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+          });
+        });
+      }
+
+      (function () {
+        const body = document.body;
+        const cartBtn = document.getElementById("cart-header-btn");
+        const closeBtn = document.getElementById("cart-drawer-close");
+        const backdrop = document.getElementById("cart-drawer-backdrop");
+        const sidebar = document.getElementById("order-sidebar");
+
+        function setCartOpen(open) {
+          body.classList.toggle("cart-drawer-open", open);
+          if (backdrop) backdrop.setAttribute("aria-hidden", open ? "false" : "true");
+          if (cartBtn) cartBtn.setAttribute("aria-expanded", open ? "true" : "false");
+          if (open && sidebar) {
+            const focusable = sidebar.querySelector("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])");
+            if (focusable) focusable.focus({ preventScroll: true });
+          }
+        }
+
+        function openCart() {
+          setCartOpen(true);
+        }
+
+        function closeCart() {
+          setCartOpen(false);
+        }
+
+        if (cartBtn) cartBtn.addEventListener("click", openCart);
+        if (closeBtn) closeBtn.addEventListener("click", closeCart);
+        if (backdrop) backdrop.addEventListener("click", closeCart);
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && body.classList.contains("cart-drawer-open")) closeCart();
+        });
+      })();
+
+    </script>
   </body>
 </html>
