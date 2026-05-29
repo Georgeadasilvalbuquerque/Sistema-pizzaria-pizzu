@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!--
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!--
       API: com servidor frontend (npm start), proxy /api -> backend.
       Para forcar http://localhost:3000/api no cliente, descomente:
     <meta name="api-base" content="http://localhost:3000/api" />
@@ -141,7 +142,9 @@
         </section>
       </div>
     </div>
+  </nav>
 
+<<<<<<< HEAD
     <footer class="pizzu-footer">
       <div class="pizzu-footer__container">
 <<<<<<< HEAD
@@ -234,27 +237,220 @@
     <script src="./js/api.js"></script>
 =======
         <h2 class="pizzu-footer__title">Venha pegar uma fatia!</h2>
+=======
+  <div class="container-fluid px-3 px-lg-4 pb-4">
+    <div class="row g-4">
+      <div class="col-12">
+        <main>
+         
+>>>>>>> 92d87809ef80304ba9fd8cb810f03ade30f8b718
 
-        <div class="pizzu-footer__main">
-          <div>
-            <iframe
-              class="pizzu-footer__map"
-              title="Mapa da Pizzaria Pizzu"
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-              src="https://www.openstreetmap.org/export/embed.html?bbox=-46.641%2C-23.560%2C-46.625%2C-23.548&amp;layer=mapnik&amp;marker=-23.554%2C-46.633"
-            ></iframe>
+          <!-- Banner -->
+          <div class="index-hero">
+            <section class="pizzu-banner-section" aria-label="Banner da Pizzaria Pizzu">
+              <div class="pizzu-banner-overlay"></div>
+              <div class="pizzu-banner-content">
+                <h1>A PIZZARIA</h1>
+                <h2>Pizzu</h2>
+
+              </div>
+            </section>
           </div>
 
-          <address class="pizzu-footer__info">
-            <p class="d-flex align-items-center gap-2 mb-2">
-              <i class="bi bi-shop fs-5 text-pizzu-orange"></i><strong>Contato da Pizzaria Pizzu</strong>
-            </p>
-            <p class="d-flex align-items-start gap-2"><i class="bi bi-whatsapp text-success"></i><span>WhatsApp: (11) 98888-7766</span></p>
-            <p class="d-flex align-items-start gap-2"><i class="bi bi-instagram text-danger"></i><span>Instagram: @pizzariapizzu.oficial</span></p>
-            <p class="d-flex align-items-start gap-2"><i class="bi bi-signpost-2"></i><span>CEP: 04567-890</span></p>
-            <p class="d-flex align-items-start gap-2"><i class="bi bi-envelope"></i><span>E-mail: contato@pizzariapizzu.com.br</span></p>
-          </address>
+          <!-- faixa automatica de pizzas -->
+          <section class="pizza-escalator mb-4" aria-label="Destaques de pizzas em movimento">
+            <div class="pizza-escalator__viewport">
+              <div class="pizza-escalator__track">
+                <article class="pizza-escalator__item">
+                  <img src="./assets/img/pizza-02.png" alt="Pizza Calabresa" loading="lazy" decoding="async" />
+                  <p>Calabresa</p>
+                </article>
+                <article class="pizza-escalator__item">
+                  <img src="./assets/img/pizza-01.png" alt="Pizza Margherita" loading="lazy" decoding="async" />
+                  <p>Margherita</p>
+                </article>
+                <article class="pizza-escalator__item">
+                  <img src="./assets/img/pizza-04.png" alt="Pizza Frango com Catupiry" loading="lazy" decoding="async" />
+                  <p>Frango com Catupiry</p>
+                </article>
+                <article class="pizza-escalator__item">
+                  <img src="./assets/img/pizza-03.png" alt="Pizza Quatro Queijos" loading="lazy" decoding="async" />
+                  <p>Quatro Queijos</p>
+                </article>
+              </div>
+            </div>
+          </section>
+
+
+          <!-- titulos grandes -->
+          <section class="index-intro my-5" aria-labelledby="titulo-intro">
+            <h1 class="h1">Bem-vindo à Pizzaria Pizzu</h1>
+            <p id="titulo-intro" class="lead opacity-90">
+              Onde cada fatia é uma explosão de sabor e alegria. Descubra nosso cardápio irresistível e aproveite as
+              melhores pizzas da cidade, <br>
+              feitas com ingredientes frescos e paixão pela culinária.</p>
+            <button class="btn btn-primary btn-lg rounded-pill px-4 mt-3 d-flex align-items-center gap-2" onclick="document.getElementById('menu-cardapio').scrollIntoView({ behavior: 'smooth' })">
+              <i class="bi bi-bag-check me-2"></i>Peça agora
+            </button>
+
+          </section>
+
+          <!-- carrosel -->
+          <div id="heroCarousel" class="carousel slide carousel-fade pizzu-hero-carousel rounded-4 overflow-hidden mb-4"
+            data-bs-ride="carousel" data-bs-interval="6000">
+            <div class="carousel-indicators">
+              <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"
+                aria-current="true" aria-label="Slide 1"></button>
+              <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+              <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            </div>
+            <div class="carousel-inner">
+              <div class="carousel-item active">
+                <div class="pizzu-carousel-slide bg-pizzu-dark text-white row g-0">
+                  <div class="col-md-7 d-flex flex-column justify-content-center px-4 py-4">
+                    <p class="text-uppercase small text-white-50 mb-2"><i class="bi bi-percent me-1"></i>Oferta</p>
+                    <h2 class="display-6 fw-bold mb-3">Faca seu primeiro pedido e ganhe <span
+                        class="text-pizzu-orange">50% off</span></h2>
+                    <p class="mb-4 opacity-90">Sabores incriveis, ingredientes frescos e entrega rapida.</p>
+                    <div>
+                      <a href="#menu-cardapio" class="btn btn-primary btn-lg rounded-pill px-4">
+                        <i class="bi bi-bag-check me-2"></i>Peça agora
+                      </a>
+                    </div>
+                  </div>
+                  <div class="col-md-5 d-flex align-items-center justify-content-center py-4">
+                    <span class="pizzu-carousel-slide__icon" aria-hidden="true"><img src="./assets/img/pizza-01.png"
+                        alt="Pizza" width="80%"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="carousel-item">
+                <div class="pizzu-carousel-slide bg-pizzu-dark text-white row g-0">
+                  <div class="col-md-7 d-flex flex-column justify-content-center px-4 py-4">
+                    <p class="text-uppercase small text-white-50 mb-2"><i class="bi bi-leaf me-1"></i>Qualidade</p>
+                    <h2 class="display-6 fw-bold mb-3">Ingredientes <span class="text-pizzu-orange">frescos</span> todos
+                      os dias</h2>
+                    <p class="mb-0 opacity-90">Massa artesanal e molho preparado na casa.</p>
+                  </div>
+                  <div class="col-md-5 d-flex align-items-center justify-content-center py-4">
+                    <span class="pizzu-carousel-slide__icon" aria-hidden="true"><img src="./assets/img/pizza-02.png"
+                        alt="Pizza" width="80%"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="carousel-item">
+                <div class="pizzu-carousel-slide bg-pizzu-dark text-white row g-0">
+                  <div class="col-md-7 d-flex flex-column justify-content-center px-4 py-4">
+                    <p class="text-uppercase small text-white-50 mb-2"><i class="bi bi-truck me-1"></i>Entrega</p>
+                    <h2 class="display-6 fw-bold mb-3">Rápido até <span class="text-pizzu-orange">você</span></h2>
+                    <p class="mb-0 opacity-90">Acompanhe seu pedido do forno até a porta.</p>
+                  </div>
+                  <div class="col-md-5 d-flex align-items-center justify-content-center py-4">
+                    <span class="pizzu-carousel-slide__icon" aria-hidden="true"><img src="./assets/img/pizza-03.png"
+                        alt="Pizza" width="80%"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Anterior</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Proximo</span>
+            </button>
+          </div>
+
+          <!-- cards de markting-->
+          <section class="index-marketing-cards row g-4 mb-5">
+            <div class="col-md-4">
+              <div class="card h-100 text-center border-0 shadow-sm">
+                <div class="card-body">
+                  <i class="bi bi-emoji-smile-fill text-pizzu-orange fs-1 mb-3"></i>
+                  <h5 class="card-title mb-2">Sabor Inigualável</h5>
+                  <p class="card-text opacity-90">Descubra o verdadeiro sabor da pizza com
+                    nossos ingredientes frescos e receitas exclusivas.</p>
+                  <p class="small text-muted mb-2">Receitas artesanais preparadas diariamente para manter a qualidade em
+                    cada pedido.</p>
+                  <span class="badge rounded-pill bg-warning-subtle text-dark border border-warning">Mais pedidas da
+                    casa</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card h-100 text-center border-0 shadow-sm">
+                <div class="card-body">
+                  <i class="bi bi-speedometer2 text-pizzu-orange fs-1 mb-3"></i>
+                  <h5 class="card-title mb-2">Entrega Rápida</h5>
+                  <p class="card-text opacity-90">Sua pizza quente e deliciosa na sua porta em tempo recorde.</p>
+                  <p class="small text-muted mb-2">Equipe focada em agilidade para voce receber com sabor e temperatura
+                    ideais.</p>
+                  <span class="badge rounded-pill bg-light text-dark border">Pedido monitorado em tempo real</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card h-100 text-center border-0 shadow-sm">
+                <div class="card-body">
+                  <i class="bi bi-people-fill text-pizzu-orange fs-1 mb-3"></i>
+                  <h5 class="card-title mb-2">Feito para Compartilhar</h5>
+                  <p class="card-text opacity-90">Nossas pizzas são perfeitas para reunir amigos e família em momentos
+                    especiais.</p>
+                  <p class="small text-muted mb-2">Opcoes de tamanhos e sabores para combinar com qualquer ocasiao.</p>
+                  <span class="badge rounded-pill bg-light text-dark border">Combos para 2, 4 e 6 pessoas</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- cardapio -->
+          <section id="menu-cardapio" class="mb-4">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+              <h2 class="h4 pizzu-section-title mb-0"><i
+                  class="bi bi-grid-3x3-gap-fill text-pizzu-orange me-2"></i>Cardapio</h2>
+              <div class="d-flex flex-wrap gap-2">
+                <span class="badge rounded-pill bg-white text-dark border border-warning px-3 py-2">
+                  <i class="bi bi-fire text-danger me-1"></i>Pizza
+                </span>
+                <span class="badge rounded-pill bg-light text-secondary border px-3 py-2">
+                  <i class="bi bi-cup-straw me-1"></i>Bebidas em breve
+                </span>
+              </div>
+            </div>
+          </section>
+
+          <section class="mb-5" aria-labelledby="titulo-destaque">
+            <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+              <h3 id="titulo-destaque" class="h5 pizzu-section-title mb-0">
+                <i class="bi bi-star-fill text-warning me-2"></i>Produtos em destaque
+              </h3>
+            </div>
+            <div id="products-list" class="row g-4"></div>
+          </section>
+
+          <section class="mb-4 promotions-section" aria-labelledby="titulo-promos">
+            <div class="d-flex align-items-center mb-3">
+              <h3 id="titulo-promos" class="h5 pizzu-section-title mb-0">
+                <i class="bi bi-tag-fill text-pizzu-orange me-2"></i>Promocoes de hoje
+              </h3>
+            </div>
+            <div id="promotions-list" class="row g-4"></div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <footer class="pizzu-footer">
+    <div class="pizzu-footer__container">
+      <h2 class="pizzu-footer__title">Venha pegar uma fatia!</h2>
+
+      <div class="pizzu-footer__main">
+        <div>
+          <iframe class="pizzu-footer__map" title="Mapa da Pizzaria Pizzu" loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            src="https://www.openstreetmap.org/export/embed.html?bbox=-46.641%2C-23.560%2C-46.625%2C-23.548&amp;layer=mapnik&amp;marker=-23.554%2C-46.633"></iframe>
         </div>
 
         <address class="pizzu-footer__info">
