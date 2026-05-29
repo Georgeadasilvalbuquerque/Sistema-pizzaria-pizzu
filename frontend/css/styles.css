@@ -43,6 +43,29 @@ img {
   margin-bottom: 0;
 }
 
+body[data-page="index"] {
+  padding-top: 88px;
+}
+
+body[data-page="index"] .pizzu-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 1030;
+}
+
+body[data-page="login"] {
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 12px 0;
+}
+
+body[data-page="login"] .pizzu-auth-card .card-body {
+  padding: clamp(1rem, 2.2vw, 1.5rem) !important;
+}
+
 .app-shell--index .index-hero {
   grid-column: 1;
   grid-row: 2;
@@ -617,6 +640,12 @@ li {
 }
 
 /* Pizzu banner + rodape (pagina inicial) */
+.index-hero {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+
 .pizzu-banner-section {
   position: relative;
   width: 100%;
@@ -841,7 +870,8 @@ li {
 .pizzu-footer__map {
   width: 100%;
   max-width: 100%;
-  min-height: 260px;
+  height: clamp(220px, 32vw, 340px);
+  min-height: 220px;
   border: 1px solid #444;
 }
 
@@ -872,15 +902,17 @@ li {
 
 .pizzu-footer__bottom {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 2rem;
-  align-items: end;
+  justify-items: center;
+  align-items: center;
+  text-align: center;
 }
 
 .pizzu-footer__social {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.85rem;
 }
 
@@ -922,6 +954,7 @@ li {
   flex-direction: column;
   gap: 0.75rem;
   max-width: 360px;
+  width: 100%;
 }
 
 .pizzu-footer__input,
@@ -971,4 +1004,164 @@ li {
   .pizzu-footer__newsletter-form {
     max-width: none;
   }
+}
+.pizzu-banner-section {
+  position: relative;
+  width: 100%;
+  height: min(80vh, 720px);
+  min-height: 650px;
+  margin-bottom: 0;
+  background-image: url("../../assets/img/pizzaria-banner.jpg");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.pizzu-banner-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.pizzu-banner-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #fff;
+  font-family: Montserrat, "Segoe UI", Arial, sans-serif;
+  width: min(100%, 900px);
+  z-index: 1;
+}
+
+.pizzu-banner-content h1 {
+  margin: 0;
+  font-size: clamp(2rem, 6vw, 5rem);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  
+}
+
+.pizzu-banner-content h2 {
+  margin: 0.35rem 0 0;
+  font-family: "Babylonica", cursive;
+  font-size: clamp(2rem, 6vw, 4rem);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.65);
+}
+
+.pizzu-banner-content button {
+  margin-top: 1.4rem;
+  padding: 0.8rem 2.4rem;
+  background: #fff;
+  color: #000;
+  border: 1px solid #000;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+.pizzu-banner-content button:hover {
+  opacity: 0.92;
+}
+
+.pizzu-hero-pizza {
+  font-size: 500px;
+  font-weight: 700;
+  filter: drop-shadow(0 12px 12px rgba(0, 0, 0, 0.35));
+}
+.h1 {
+  font-size: 5.5rem;
+}
+.lead-opacity-90{
+  opacity: 0.9;
+  font-size: 1.25rem;
+}
+
+.pizza-escalator {
+  background: linear-gradient(180deg, #fff7ef 0%, #ffe9d4 100%);
+  border: 1px solid rgba(255, 122, 0, 0.18);
+  border-radius: 0;
+  border-left: 0;
+  border-right: 0;
+  padding: 0.8rem 0;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+
+.pizza-escalator__viewport {
+  overflow: hidden;
+  width: 100%;
+}
+
+.pizza-escalator__track {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: max-content;
+  animation: pizza-escalator-scroll 20s linear infinite;
+  will-change: transform;
+}
+
+.pizza-escalator__item {
+  flex: 0 0 auto;
+  width: 180px;
+  background: #ffffff;
+  border-radius: 0.9rem;
+  border: 1px solid rgba(255, 122, 0, 0.16);
+  padding: 0.75rem;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(255, 122, 0, 0.12);
+}
+
+.pizza-escalator__item img {
+  width: 100%;
+  height: 95px;
+  object-fit: contain;
+  display: block;
+}
+
+.pizza-escalator__item p {
+  margin: 0.35rem 0 0;
+  font-weight: 700;
+  color: #7a3d05;
+  font-size: 0.9rem;
+}
+
+@keyframes pizza-escalator-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-1 * var(--pizza-cycle-width, 784px)));
+  }
+}
+
+@media (max-width: 576px) {
+  .pizza-escalator__item {
+    width: 150px;
+  }
+
+  .pizza-escalator__item img {
+    height: 82px;
+  }
+}
+
+.slider-progress-list li {
+  font-size: 0.85rem;
+  opacity: 0.5;
+  transition: opacity 0.3s ease, color 0.3s ease;
+}
+
+.slider-progress-list li.active {
+  opacity: 1;
+  color: #ff7a00; /* ajuste para sua cor tema */
+  font-weight: 600;
 }
