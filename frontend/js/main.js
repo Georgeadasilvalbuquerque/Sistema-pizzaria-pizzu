@@ -74,7 +74,7 @@ function renderProductsReadOnly(products, targetId) {
 }
 
 function getPostLoginRedirect() {
-  var allowed = ["/index.html", "/HTML/carrinho.html", "/HTML/cadastro.html"];
+  var allowed = ["/index.html", "/HTML/carrinho.html"];
   var params = new URLSearchParams(window.location.search);
   var next = params.get("next");
   if (next && allowed.indexOf(next) !== -1) return next;
@@ -110,6 +110,39 @@ async function refreshCartBadges() {
     badge.textContent = label;
     badge.classList.toggle("d-none", count === 0);
   }
+}
+
+function setupPizzaEscalatorInfinite() {
+  const viewport = document.querySelector(".pizza-escalator__viewport");
+  const track = document.querySelector(".pizza-escalator__track");
+  if (!viewport || !track) return;
+
+  const baseItems = Array.from(track.querySelectorAll(".pizza-escalator__item")).slice(0, 4);
+  if (!baseItems.length) return;
+
+  function rebuildTrackForViewport() {
+    track.querySelectorAll('[data-escalator-clone="true"]').forEach((el) => el.remove());
+
+    const itemWidth = Math.round(baseItems[0].getBoundingClientRect().width) || 180;
+    const gap = Math.round(parseFloat(window.getComputedStyle(track).gap || "16")) || 16;
+    const cycleWidth = baseItems.length * itemWidth + baseItems.length * gap;
+    track.style.setProperty("--pizza-cycle-width", `${cycleWidth}px`);
+
+    const minimumTrackWidth = viewport.clientWidth + cycleWidth * 2;
+    while (track.scrollWidth < minimumTrackWidth) {
+      baseItems.forEach((item) => {
+        const clone = item.cloneNode(true);
+        clone.setAttribute("aria-hidden", "true");
+        clone.setAttribute("data-escalator-clone", "true");
+        const img = clone.querySelector("img");
+        if (img) img.alt = "";
+        track.appendChild(clone);
+      });
+    }
+  }
+
+  rebuildTrackForViewport();
+  window.addEventListener("resize", rebuildTrackForViewport);
 }
 
 async function setupIndexPage() {
@@ -168,6 +201,7 @@ async function setupIndexPage() {
     showMessage(error.message, "error");
   }
 
+  setupPizzaEscalatorInfinite();
   await refreshCartBadges();
 }
 
@@ -294,7 +328,7 @@ async function setupCartPage() {
     if (hint) {
       if (!token) {
         hint.innerHTML =
-          '<i class="bi bi-info-circle me-1"></i>Ao finalizar, pedimos login. Sem conta? Veja <a href="./cadastro.html">contas de demonstracao</a> para entrar.';
+          '<i class="bi bi-info-circle me-1"></i>Ao finalizar, pedimos login com sua conta.';
       } else if (user.role === "CLIENTE") {
         hint.textContent = "Ao finalizar, seu pedido sera registrado com sucesso.";
       } else {
